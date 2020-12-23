@@ -1,0 +1,55 @@
+#
+# zte connectivity.rc
+#
+on post-fs-data
+    #Create directory for BT pcm sample
+    mkdir /data/vendor/audio/bt 0770 media audio
+    chmod 0664 /mnt/vendor/persist/.bt_nv.bin
+    # Allow all permission to /data/misc/dhcp for "Other"
+    mkdir /data/misc/dhcp 0777 dhcp dhcp
+    chown dhcp dhcp /data/misc/dhcp
+    # add tcpdump log directory
+    mkdir /data/tcplog 0770 root root
+
+#
+# zte btlog(QXDM and UART)
+#
+on property:persist.sys.btlog.enable=0
+    #stop start_ipclog
+    #write /sys/devices/soc/7570000.uart/debug_mask 3
+    start stop_qxdmbtlog
+
+on property:persist.sys.btlog.enable=1
+    start start_qxdmbtlog
+    #start start_ipclog
+
+service start_qxdmbtlog /system/bin/start_qxdmbtlog.sh
+    user root
+    disabled
+    oneshot
+
+service stop_qxdmbtlog /system/bin/stop_qxdmbtlog.sh
+    user root
+    disabled
+    oneshot
+
+service start_ipclog /system/bin/start_ipclog.sh
+    user root
+    disabled
+    oneshot
+
+service btchip /system/bin/init.btprop.sh
+    class late_start
+    oneshot
+
+service wlan_prop /system/bin/init.wlanprop.sh
+    class late_start
+    oneshot
+
+# RF test *983*28#-abandoned
+service bttestmode /system/bin/bt_testmode.sh
+    class late_start
+    user root
+    oneshot
+    disabled
+

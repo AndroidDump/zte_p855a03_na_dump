@@ -1,0 +1,1044 @@
+#!/system/bin/sh
+
+export PATH=/vendor/xbin:$PATH
+CACHEDIR=/cache
+DATADIR=/data
+SYSDIR=/data/local
+LOGDIR=$SYSDIR/vendor_logs
+LAST_KMSG_FILE=/proc/last_kmsg
+DEBUGFS_PATH=/sys/kernel/debug
+PSTORE_PATH=/sys/fs/pstore
+PSTORE_CONSOLE_FILE=$PSTORE_PATH/console-ramoops
+PSTORE_CONSOLE_FILE_NEW=$PSTORE_PATH/console-ramoops-0
+SMEM_DEBUGFS_PATH=$DEBUGFS_PATH/smem_log
+SMEM_GLOBAL_PATH=/proc/smem_global
+INTERVAL_MAIN=30
+KMSG_FILE=/dev/kmsg
+KMSG_EXT_FILE=/proc/kmsg_ext
+PID_INFO_PATH=/sys/module/logger/parameters
+PID_INFO_NAME=$PID_INFO_PATH/pid_info
+sdk=`getprop ro.build.version.sdk`
+platform=`getprop ro.board.platform`
+baseband=`cat /sys/devices/soc0/machine`
+SM8150_PLATFORM="SM8150"
+DMESG="dmesg"
+if [ "$sdk" -gt "26" ];then
+    DMESG="dmesg -S"
+fi
+PMLOG_LOOP_CNT=0
+
+function debug_oom(){
+  mkdir /data/vendor/gpu
+  chmod 0777 /data/vendor/gpu
+  echo 'enableMmapFailDump=1'>/data/vendor/gpu/adreno_config.txt
+}
+
+function find_emmc_battery_thermal_dir(){
+  local thermal_dir=/sys/devices/virtual/thermal
+  for j in $thermal_dir/*
+  do
+	if [[ `cat $j/type` == emmc_therm ]]; then
+		echo emmc_therm,`cat $j/temp`
+		#ther_joint=${ther_joint}${ther_data}
+		emmc_therm_dir=$j
+		echo $emmc_therm_dir
+	elif [[ `cat $j/type` == battery ]]; then
+		echo battery,`cat $j/temp`
+		#ther_joint=${ther_joint}${ther_data}
+		battery_therm_dir=$j
+		echo $battery_therm_dir
+	fi
+  done
+}
+
+function get_emmc_battery_thermal(){
+    if [[ "_$platform" == "_msmnile" ]]; then
+        xo_therm=`cat /sys/devices/virtual/thermal/thermal_zone67/temp`
+        skin_them=`cat /sys/devices/virtual/thermal/thermal_zone68/temp`
+        battey=`cat /sys/devices/virtual/thermal/thermal_zone88/temp`
+        date >> $LOGDIR/logcat/pmlog/emmc_battery_thermal.txt
+        echo "xo-therm",$xo_therm >> $LOGDIR/logcat/pmlog/emmc_battery_thermal.txt
+        echo "skin-therm",$skin_them >> $LOGDIR/logcat/pmlog/emmc_battery_thermal.txt
+        echo "battery",$battey >> $LOGDIR/logcat/pmlog/emmc_battery_thermal.txt
+        echo "========================================" >> $LOGDIR/logcat/pmlog/emmc_battery_thermal.txt
+    else
+        emmc_temp=`cat $emmc_therm_dir/temp`
+        battery_temp=`cat $battery_therm_dir/temp`
+        date >> $LOGDIR/logcat/pmlog/emmc_battery_thermal.txt
+        echo "emmc_therm",$emmc_temp >> $LOGDIR/logcat/pmlog/emmc_battery_thermal.txt
+        echo "battery_therm",$battery_temp >> $LOGDIR/logcat/pmlog/emmc_battery_thermal.txt
+        echo "========================================" >> $LOGDIR/logcat/pmlog/emmc_battery_thermal.txt
+        echo "emmc_therm"
+    fi
+}
+
+function get_tcp_info(){
+    date >> $LOGDIR/logcat/pmlog/tcp_tx_rx.txt
+    echo "get_tcp_info"
+    if [ -d /proc/uid_stat ] ; then
+        debug "/proc/uid_stat exist"
+        for element in `ls /proc/uid_stat`
+        do
+            dir=/proc/uid_stat/$element/
+            tx=`cat /proc/uid_stat/$element/tcp_snd`
+            rx=`cat /proc/uid_stat/$element/tcp_rcv`
+            echo $element $tx $rx >> $LOGDIR/logcat/pmlog/tcp_tx_rx.txt
+        done
+    else
+        debug "/proc/uid_stat not exist, use logz to parse /proc/net/xt_qtaguid/stats"
+        logz -n >> $LOGDIR/logcat/pmlog/tcp_tx_rx.txt
+    fi
+    echo "========================================" >> $LOGDIR/logcat/pmlog/tcp_tx_rx.txt
+}
+
+function get_robot_info(){
+    local robot_debug=`getprop robot.debug`
+    if [ x"$robot_debug" == x"1" ]; then
+        local tt=`date +%G%m%d_%H%M%S`
+        local name=robot_log_$tt
+        echo "robot.debug=1, ready to gz, "$tt  >> /sdcard/robot/robotlog.txt
+        tar zcf /sdcard/robot/${name}.tar.gz   $LOGDIR/data_kernel/    $LOGDIR/kernel/   $LOGDIR/logcat/
+    else
+        echo "tar failed,need setprop robot.debug=1, "$tt >> /sdcard/robot/robotlog.txt
+    fi
+}
+
+function get_wakeup_sources(){
+    date >> $LOGDIR/logcat/pmlog/wakeup_sources.txt
+    if [ -e "/d/wakeup_sources" ]; then
+        cat /d/wakeup_sources >> $LOGDIR/logcat/pmlog/wakeup_sources.txt
+    else
+        echo "/d/wakeup_sources_active not exist" >> $LOGDIR/logcat/pmlog/wakeup_sources.txt
+    fi
+    echo "========================================" >> $LOGDIR/logcat/pmlog/wakeup_sources.txt
+}
+
+function get_rpm_stats(){
+    date >> $LOGDIR/logcat/pmlog/rpm_stats.txt
+    cat /d/rpm_stats >> $LOGDIR/logcat/pmlog/rpm_stats.txt
+    echo "========================================" >> $LOGDIR/logcat/pmlog/rpm_stats.txt
+}
+
+function get_subsystem_sleep_stats(){
+    date >> $LOGDIR/logcat/pmlog/subsystem_sleep_info.txt
+    if [ -e "/sys/power/rpmh_stats/master_stats" ]; then
+        cat /sys/power/rpmh_stats/master_stats >> $LOGDIR/logcat/pmlog/subsystem_sleep_info.txt
+    fi
+    if [ -e "/sys/power/system_sleep/stats" ]; then
+        cat /sys/power/system_sleep/stats >> $LOGDIR/logcat/pmlog/subsystem_sleep_info.txt
+    fi
+    echo "========================================" >> $LOGDIR/logcat/pmlog/subsystem_sleep_info.txt
+}
+
+function get_charge_now_raw(){
+    date >> $LOGDIR/logcat/pmlog/charge_now_raw.txt
+    cat /sys/class/power_supply/bms/charge_now_raw >> $LOGDIR/logcat/pmlog/charge_now_raw.txt
+    echo "========================================" >> $LOGDIR/logcat/pmlog/charge_now_raw.txt
+}
+
+function get_cpufreq_time_inState(){
+    date >> $LOGDIR/logcat/pmlog/cpu0_cpufreq_time_in_state.txt
+    cat /sys/devices/system/cpu/cpu0/cpufreq/stats/time_in_state >> $LOGDIR/logcat/pmlog/cpu0_cpufreq_time_in_state.txt
+    echo "========================================" >> $LOGDIR/logcat/pmlog/cpu0_cpufreq_time_in_state.txt
+    if [ -e "/sys/devices/system/cpu/cpu4" ]; then
+	date >> $LOGDIR/logcat/pmlog/cpu4_cpufreq_time_in_state.txt
+	cat /sys/devices/system/cpu/cpu4/cpufreq/stats/time_in_state >> $LOGDIR/logcat/pmlog/cpu4_cpufreq_time_in_state.txt
+	echo "========================================" >> $LOGDIR/logcat/pmlog/cpu4_cpufreq_time_in_state.txt
+    else
+	date >> $LOGDIR/logcat/pmlog/cpu2_cpufreq_time_in_state.txt
+	cat /sys/devices/system/cpu/cpu2/cpufreq/stats/time_in_state >> $LOGDIR/logcat/pmlog/cpu2_cpufreq_time_in_state.txt
+	echo "========================================" >> $LOGDIR/logcat/pmlog/cpu2_cpufreq_time_in_state.txt
+    fi;
+}
+
+function bak_if_pmlog()
+{
+    local bakfile=$1
+    local file=${bakfile##*/}
+    local dir=${bakfile%/*}
+    local size=$2
+    local dir_bk=pwd
+
+    debug "bakfile:$bakfile file:$file dir:$dir size:$size"
+    if [ ! -d $bakfile ] ; then
+        debug "bakfile:$bakfile donot exist"
+        return
+    fi
+
+    l=`du -s   $bakfile | sed 's/[\t ][\t ]*/\n/g' | sed -n '1p'`
+    if [ "$l" -gt "$2" ] ;then
+        debug "rm $bakfile.0.tar.gz"
+        #rm $bakfile.0.tar.gz
+        pwd
+        debug "cd $dir for $dir_bk"
+        cd $dir
+        debug "$file -> $file.0.tar.gz"
+        rm $file.5.tar.gz
+        mv $file.4.tar.gz $file.5.tar.gz
+        mv $file.3.tar.gz $file.4.tar.gz
+        mv $file.2.tar.gz $file.3.tar.gz
+        mv $file.1.tar.gz $file.2.tar.gz
+        mv $file.0.tar.gz $file.1.tar.gz
+        tar zcf $file.0.tar.gz $file
+        debug "rm $file"
+        rm -rf $bakfile/*
+        cd $dir_bk
+        pwd
+    fi
+}
+
+function get_pm_log(){
+    echo "get_pm_log"
+    if [ $PMLOG_LOOP_CNT -lt 10 ]; then
+        PMLOG_LOOP_CNT=`expr $PMLOG_LOOP_CNT + 1`
+    else
+        get_wakeup_sources
+        PMLOG_LOOP_CNT=0
+    fi
+    get_tcp_info
+    #get_rpm_stats
+    #get_acct_info
+    get_subsystem_sleep_stats
+    get_charge_now_raw
+    get_cpufreq_time_inState
+    get_emmc_battery_thermal
+    bak_if_pmlog  $LOGDIR/logcat/pmlog 8192
+}
+
+function get_robot_log(){
+    mkdir /sdcard/robot/
+    echo "robot enter"  >> /sdcard/robot/robotlog.txt
+    get_robot_info
+}
+
+
+function check_lowmem()
+{
+    #MemTotalStr=`cat /proc/meminfo | /system/bin/grep MemTotal`
+    #MemTotal=${MemTotalStr:16:8}
+    MemAvailableStr=`cat /proc/meminfo | /system/bin/grep MemAvailable`
+    MemAvailable=${MemAvailableStr:16:8}
+    for size in $((1024*1024)) $((1024*768)) $((1024*512))
+    do
+	local file=$LOGDIR/logcat/dumpsys-$size.txt
+	debug "check_lowmem: $MemAvailable $size $file"
+	if [ ! -f "$file" -a "$MemAvailable" -lt "$size" ]; then
+	    debug "check_lowmem: $MemAvailable $size $file log"
+	    date >> $file
+	    cat /proc/meminfo >> $file
+	    ps -eT >> $file
+	    dumpsys -t 60 meminfo >> $file 2>&1 
+	    chmod 755 $file
+	else
+	    debug "check_lowmem: $MemAvailable $size $file unlog"
+	fi
+    done
+}
+
+
+
+function debug()
+{
+    echo $1
+    #echo $1 >>$LOGDIR/getlogdebug.txt
+}
+
+function bak_if()
+{
+    local bakfile=$1
+    local file=${bakfile##*/}
+    local dir=${bakfile%/*}
+    local size=$2
+
+    debug "bakfile:$bakfile file:$file dir:$dir size:$size"
+    if [ ! -f $bakfile ] ; then
+        debug "bakfile:$bakfile donot exist"
+        return
+    fi
+
+    l=`du -s   $bakfile | sed 's/[\t ][\t ]*/\n/g' | sed -n '1p'`
+    if [ "$l" -gt "$2" ] ;then
+        debug "rm $bakfile.0.tar.gz"
+        rm $bakfile.0.tar.gz
+        pwd
+        debug "cd $dir"
+        cd $dir
+        debug "$file -> $file.0.tar.gz"
+        tar zcf $file.0.tar.gz $file
+        debug "rm $file"
+        rm $file
+        cd -
+        pwd
+    fi
+}
+
+function bak_if_kernel()
+{
+    local bakfile=$1
+    local file=${bakfile##*/}
+    local dir=${bakfile%/*}
+    local size=$2
+
+    debug "bakfile:$bakfile file:$file dir:$dir size:$size"
+    if [ ! -f $bakfile ] ; then
+        debug "bakfile:$bakfile donot exist"
+        return
+    fi
+
+    l=`du -s   $bakfile | sed 's/[\t ][\t ]*/\n/g' | sed -n '1p'`
+    if [ "$l" -gt "$2" ] ;then
+        debug "rm $bakfile.0.tar.gz"
+        #rm $bakfile.0.tar.gz
+        pwd
+        debug "cd $dir"
+        cd $dir
+        debug "$file -> $file.0.tar.gz"
+        rm $file.5.tar.gz
+        mv $file.4.tar.gz $file.5.tar.gz
+        mv $file.3.tar.gz $file.4.tar.gz
+        mv $file.2.tar.gz $file.3.tar.gz
+        mv $file.1.tar.gz $file.2.tar.gz
+        mv $file.0.tar.gz $file.1.tar.gz
+        tar zcf $file.0.tar.gz $file
+        debug "rm $file"
+        rm $file
+        cd -
+        pwd
+    fi
+}
+
+function bak_if_tcpip()
+{
+    local bakfile=$1
+    local file=${bakfile##*/}
+    local dir=${bakfile%/*}
+    local size=$2
+
+    debug "bakfile:$bakfile file:$file dir:$dir size:$size"
+    if [ ! -f $bakfile ] ; then
+        debug "bakfile:$bakfile donot exist"
+        return
+    fi
+
+    l=`du -s   $bakfile | sed 's/[\t ][\t ]*/\n/g' | sed -n '1p'`
+    if [ "$l" -gt "$2" ] ;then
+        debug "rm $bakfile.0.tar.gz"
+        #rm $bakfile.0.tar.gz
+        pwd
+        debug "cd $dir"
+        cd $dir
+        debug "$file -> $file.0.tar.gz"
+        rm $file.5.tar.gz
+        mv $file.4.tar.gz $file.5.tar.gz
+        mv $file.3.tar.gz $file.4.tar.gz
+        mv $file.2.tar.gz $file.3.tar.gz
+        mv $file.1.tar.gz $file.2.tar.gz
+        mv $file.0.tar.gz $file.1.tar.gz
+        tar zcf $file.0.tar.gz $file
+        debug "rm $file"
+        rm $file
+        cd -
+        pwd
+    fi
+}
+
+function process_info()
+{
+    debug "process_info begin"
+    echo "------------------------------------------" >> $LOGDIR/logcat/ps.txt
+    date >> $LOGDIR/logcat/ps.txt
+    cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_max_freq >> $LOGDIR/logcat/ps.txt
+    # for SM8150 log the lmh frequency
+    if [ -e /sys/devices/platform/soc/18321000.qcom,cpucc/18321000.qcom,cpucc:qcom,limits-dcvs@18350800/lmh_freq_limit ]; then
+        echo "LMH freq:" >> $LOGDIR/logcat/ps.txt
+        cat /sys/devices/platform/soc/18321000.qcom,cpucc/18321000.qcom,cpucc:qcom,limits-dcvs@18350800/lmh_freq_limit >> $LOGDIR/logcat/ps.txt
+        cat /sys/devices/platform/soc/18321000.qcom,cpucc/18321000.qcom,cpucc:qcom,limits-dcvs@18358800/lmh_freq_limit >> $LOGDIR/logcat/ps.txt
+    fi
+    ps -e | grep "system_server" >> $LOGDIR/logcat/ps.txt
+    echo "\n----meminfo----" >> $LOGDIR/logcat/ps.txt
+    sed -n '1,6'p /proc/meminfo >> $LOGDIR/logcat/ps.txt
+
+    bak_if  $LOGDIR/logcat/ps.txt 8192
+
+    debug "process_info end"
+}
+
+
+
+function kmsg()
+{
+    debug "kmsg begin"
+	local mycurdir=`pwd`
+	cd /
+	if [ ! -f ".cell" ] ; then
+	 $DMESG | grep "avc:" >> $LOGDIR/kernel/selinux_audit.txt
+     bak_if  $LOGDIR/kernel/selinux_audit.txt 4096
+     if [ -f "$KMSG_EXT_FILE" ]; then
+      $DMESG -c >> $LOGDIR/kernel/log_kernel.txt
+     else
+      $DMESG -c | egrep -v  "\[TCP\]|\[IP\]">> $LOGDIR/kernel/log_kernel.txt
+     fi
+     bak_if_kernel  $LOGDIR/kernel/log_kernel.txt 4096
+	fi
+	cd $mycurdir
+    debug "kmsg end"
+}
+
+function bak_if_tzlog()
+{
+    local bakfile=$1
+    local file=${bakfile##*/}
+    local dir=${bakfile%/*}
+    local size=$2
+
+    debug "bakfile:$bakfile file:$file dir:$dir size:$size"
+    if [ ! -f $bakfile ] ; then
+        debug "bakfile:$bakfile donot exist"
+        return
+    fi
+
+    l=`du -s   $bakfile | sed 's/[\t ][\t ]*/\n/g' | sed -n '1p'`
+    if [ "$l" -gt "$2" ] ;then
+        debug "rm $bakfile.0.tar.gz"
+        #rm $bakfile.0.tar.gz
+        pwd
+        debug "cd $dir"
+        cd $dir
+        debug "$file -> $file.0.tar.gz"
+        rm $file.5.tar.gz
+        mv $file.4.tar.gz $file.5.tar.gz
+        mv $file.3.tar.gz $file.4.tar.gz
+        mv $file.2.tar.gz $file.3.tar.gz
+        mv $file.1.tar.gz $file.2.tar.gz
+        mv $file.0.tar.gz $file.1.tar.gz
+        tar zcf $file.0.tar.gz $file
+        debug "rm $file"
+        rm $file
+        cd -
+        pwd
+    fi
+}
+
+function save_qsee_log()
+{
+    debug "save_qsee_log begin"
+    local system_id=`getprop ro.cell.name`
+    if [ "$system_id"x != ""x -a "$system_id" != "home" ] ;then
+        debug "skip save_qsee_log"
+        return
+    fi
+    date >> $LOGDIR/tz/qsee.txt
+    while true
+    do
+        dd if=$DEBUGFS_PATH/tzdbg/qsee_log of=$LOGDIR/tz/qsee0.txt bs=1024 count=4096
+        cat $LOGDIR/tz/qsee0.txt >> $LOGDIR/tz/qsee.txt
+        rm $LOGDIR/tz/qsee0.txt
+        bak_if_tzlog   $LOGDIR/tz/qsee.txt 4096
+        sleep 5
+    done
+    debug "save_qsee_log end"
+}
+
+function save_tz_log()
+{
+    debug "save_tz_log begin"
+    local system_id=`getprop ro.cell.name`
+    if [ "$system_id"x != ""x -a "$system_id" != "home" ] ;then
+        debug "skip save_tz_log"
+        return
+    fi
+    date >> $LOGDIR/tz/tz.txt
+    cat $DEBUGFS_PATH/tzdbg/log | while read line
+    do
+        echo $line >>  $LOGDIR/tz/tz.txt
+        bak_if_tzlog   $LOGDIR/tz/tz.txt 32768
+    done
+    debug "save_tz_log end"
+}
+
+function save_tcpip_log()
+{
+    local tcpip_debug=`getprop persist.shell.tcpip.debug`
+    if [ "$tcpip_debug" != "1" -a "$tcpip_debug" != "2" -a "$tcpip_debug" != "3" ] ;then
+        return
+    fi
+
+    debug "save_tcpip_log begin"
+    date >> $LOGDIR/data_kernel/tcp_kernel.txt
+    if [ -f "$KMSG_EXT_FILE" ]; then
+        while true
+        do
+            dd if=$KMSG_EXT_FILE of=$LOGDIR/data_kernel/tcp_kernel_ext.txt bs=1024 count=4096
+            cat $LOGDIR/data_kernel/tcp_kernel_ext.txt >> $LOGDIR/data_kernel/tcp_kernel.txt
+            rm $LOGDIR/data_kernel/tcp_kernel_ext.txt
+            bak_if_tcpip   $LOGDIR/data_kernel/tcp_kernel.txt 4096
+            sleep 5
+        done
+    else
+        tcpcat
+    fi
+
+    debug "save_tcpip_log end"
+}
+
+function bakup_tombstones()
+{
+    debug "backup_tombstones begin"
+    local tf
+    local tt=`date +%G%m%d_%H%M%S`
+
+    if [ ! -d /data/tombstones/ ]
+    then
+        return
+    fi
+
+    local curdir=`pwd`
+    cd /data/tombstones
+    for  tf in  `ls tombstone*`
+    do
+    if [ -s "$tf" ]; then
+        local file=${tf##*/}
+        debug "tar zcf $LOGDIR/logcat/${tt}_${file}.tar.gz ${tf}"
+        tar zcf $LOGDIR/logcat/${tt}_${file}.tar.gz ${tf}
+    fi
+    done
+
+    rm -r /data/tombstones/tombstone*
+    cd $curdir
+    debug "backup_tombstones end"
+    cp -fr /data/vendor/gpu/ /$LOGDIR/logcat/gpu
+}
+
+function ps_info()
+{
+    echo "########################<<ps -t information>>########################" >> $LOGDIR/logcat/ps.txt
+    ps -AT >> $LOGDIR/logcat/ps.txt
+    echo "#####################################################################" >> $LOGDIR/logcat/ps.txt
+}
+
+function packages_info()
+{
+    #pm list packages > $LOGDIR/logcat/installedapp.txt
+    cat /data/system/packages.xml > $LOGDIR/logcat/packages-boot.xml
+    cat /data/system/device_policies.xml > $LOGDIR/logcat/device_policies-boot.xml
+    cat /data/system/users/0/package-restrictions.xml > $LOGDIR/logcat/package-restrictions-boot.xml
+    cat /data/system/users/0/runtime-permissions.xml > $LOGDIR/logcat/runtime-permissions-boot.xml
+    cat /data/system/users/0/settings_secure.xml  > $LOGDIR/logcat/settings_secure-boot.xml
+    cat /data/system/users/0/settings_system.xml > $LOGDIR/logcat/settings_system-boot.xml
+    cat /data/system/users/0/settings_global.xml >  $LOGDIR/logcat/settings_global-boot.xml
+    chmod 755 $LOGDIR/logcat/*.xml
+}
+
+
+function baseinfo()
+{
+    echo "Service getlog Started:" >> $LOGDIR/logcat/baseinfo.txt
+    uptime >>  $LOGDIR/logcat/baseinfo.txt
+    date >> $LOGDIR/logcat/baseinfo.txt
+    cat /proc/uptime  >> $LOGDIR/logcat/baseinfo.txt
+    echo "========================================" >> $LOGDIR/logcat/baseinfo.txt
+    echo "Kernel Version:" >> $LOGDIR/logcat/baseinfo.txt
+    cat /proc/version >> $LOGDIR/logcat/baseinfo.txt
+    cat /proc/cmdline >> $LOGDIR/logcat/baseinfo.txt
+    echo "========================================" >> $LOGDIR/logcat/baseinfo.txt
+    echo "Memory Info:" >> $LOGDIR/logcat/baseinfo.txt
+    cat /proc/meminfo >> $LOGDIR/logcat/baseinfo.txt
+    echo "========================================" >> $LOGDIR/logcat/baseinfo.txt
+    echo "Property:" >> $LOGDIR/logcat/baseinfo.txt
+    getprop  >> $LOGDIR/logcat/baseinfo.txt
+    echo "========================================" >> $LOGDIR/logcat/baseinfo.txt
+    df -h >> $LOGDIR/logcat/baseinfo.txt
+    echo "========================================" >> $LOGDIR/logcat/baseinfo.txt
+    df >> $LOGDIR/logcat/baseinfo.txt
+    echo "========================================" >> $LOGDIR/logcat/baseinfo.txt
+    mount  >> $LOGDIR/logcat/baseinfo.txt
+    ps | grep "system_server" >> $LOGDIR/logcat/baseinfo.txt
+    echo "========================================" >> $LOGDIR/logcat/baseinfo.txt
+}
+
+function savemodemcrash()
+{
+    cp /data/vendor/ramdump/ramdump_crashinfo* /$LOGDIR/resetlog/modem_fatal_error.txt
+    rm /data/vendor/ramdump/ramdump_crashinfo*
+}
+
+function save_recovery_log()
+{
+    cp -rf $SYSDIR/recovery/ $LOGDIR/
+    chmod 744 -r $LOGDIR/recovery
+}
+
+function autorun()
+{
+    if [ ! -d /system/bin/autorun ]
+    then
+        return
+    fi
+    #/system/bin/autorun.sh&
+
+    #echo $$ >/dev/cpuctl/apps/bg_non_interactive/tasks
+
+    scripts=`ls /system/bin/autorun`
+
+    for exe in $scripts
+    do
+        debug "run $exe"
+        /system/bin/autorun/${exe}>>$LOGDIR/logcat/${exe}-log.txt 2>&1 &
+    done
+}
+
+function config_info()
+{
+    cp -rf /proc/config.gz > $LOGDIR/logcat/
+}
+
+function jank_detect()
+{
+    dumpsys binder_calls_stats --enable
+}
+
+function create_hook_file_for_snapshot()
+{
+   touch $LOGDIR/snapshotwhenpull.txt
+   chmod 666 $LOGDIR/snapshotwhenpull.txt
+}
+
+function my_logcat
+{
+    while true
+    do
+        logcat $*
+        sleep 1
+    done
+}
+function logcat_to_file()
+{
+    my_logcat -b crash -f $LOGDIR/logcat/logcat_crash.txt -r5120 -n8 -v threadtime AndroidRuntime:D DEBUG:D *:S &
+    my_logcat -b system -f $LOGDIR/logcat/logcat_system.txt -r5120 -n16 -v threadtime *:D PowerTracker:S &
+    my_logcat -b system -f $LOGDIR/logcat/logcat_power.txt -r5120 -n16 -v threadtime PowerTracker:D *:S &
+    my_logcat -b main -f $LOGDIR/logcat/logcat_main.txt -r5120 -n32 -v threadtime *:D ze_/$LOGDIR/logcat/exit_m.txt &
+    my_logcat -b radio -f $LOGDIR/logcat/logcat_radio.txt -r5120 -n32 -v threadtime *:D ze_/$LOGDIR/logcat/exit_r.txt &
+    my_logcat -b events -f $LOGDIR/logcat/logcat_events.txt -r4096 -n8 -v threadtime *:D &
+    my_logcat -b crash -b main -f  $LOGDIR/logcat/logcat_perf.txt  -n 2 -r 10240 -v threadtime  PERF:D JANK:D *:S ze_/$LOGDIR/logcat/exit_am.txt &
+    my_logcat -b main  -f  $LOGDIR/logcat/pmlog/logcat_pmalert.txt  -n 2 -r 10240 -v threadtime  PowerReport:D *:S &
+    my_logcat -b main  -f  $LOGDIR/logcat/logcat_am.txt  -n 2 -r 10240 -v threadtime  ActivityManager:I *:S ze_/$LOGDIR/logcat/exit_am2.txt &
+    local backtrace_threshold=`getprop persist.backtrace.threshold`
+    if [ x"$backtrace_threshold" != x"" ]; then
+       my_logcat -b main  -f  $LOGDIR/logcat/logcat_backtrace.txt  -n 5 -r 5120 -v threadtime  system_server:I *:S ze_/$LOGDIR/logcat/exit_backtrace.txt &
+    fi
+}
+
+function save_reset_log_preloop()
+{
+    date > $LOGDIR/resetlog/kernel_resetlog.txt
+    cat $LAST_KMSG_FILE >> $LOGDIR/resetlog/kernel_resetlog.txt
+    cat $PSTORE_CONSOLE_FILE >> $LOGDIR/resetlog/kernel_resetlog.txt
+    cat $SMEM_DEBUGFS_PATH/dump_sym > $LOGDIR/resetlog/smem_log_event.txt
+    cat $SMEM_DEBUGFS_PATH/dump_static_sym > $LOGDIR/resetlog/smem_log_static_events.txt
+    cat $SMEM_DEBUGFS_PATH/dump_power_sym > $LOGDIR/resetlog/smem_log_power_events.txt
+    cat $DEBUGFS_PATH/smd/modem_err > $LOGDIR/resetlog/smd.txt
+    cat $SMEM_DEBUGFS_PATH/dump_voters > $LOGDIR/resetlog/voters.txt
+    chmod -R 755 $LOGDIR/resetlog/*
+}
+
+function save_reset_log_inloop()
+{
+    if [ "$isresetlogsavedone" -eq "1" ] ;then
+        return
+    fi
+
+    if [ -e $PSTORE_CONSOLE_FILE_NEW ]; then
+        dumpstate -k >> $LOGDIR/resetlog/kernel_resetlog.txt
+        isresetlogsavedone=1
+        echo "$PSTORE_CONSOLE_FILE_NEW exist" >> $LOGDIR/logcat/summary/usage.txt
+        date >> $LOGDIR/logcat/summary/usage.txt
+    fi;
+}
+
+function beep ()
+{
+    local file_limit_debug=`getprop persist.sys.file_limit_debug`
+    if [ "$file_limit_debug" != "enable" ]; then
+        return
+    fi
+    oom_adj=`cat /proc/$1/oom_adj`
+    if [ "$oom_adj" -lt "0" ]; then
+        mkdir -p /data/local/tmp/
+        echo yes >/data/local/tmp/stopmonkey
+        killall com.android.commands.monkey
+    fi
+}
+
+function selinux_enforcing()
+{
+    local se=`getenforce`
+    if [ "$se" == "Enforcing" ] ;then
+        return 0
+    fi
+    return 1
+}
+
+function dumpsys_to_file()
+{
+    dumpsys >> $LOGDIR/logcat/dumpsys.txt
+    rm $LOGDIR/logcat/dumpsys.tar.gz
+    tar zcf $LOGDIR/logcat/dumpsys.tar.gz $LOGDIR/logcat/dumpsys.txt
+    rm $LOGDIR/logcat/dumpsys.txt
+}
+
+function collect_systrace()
+{
+    if [ ! -f $LOGDIR/mk ] ; then
+        debug "..."
+    else
+        #cat /d/tracing/trace >> $LOGDIR/logcat/trace.0
+        l=`du -s  $LOGDIR/logcat/trace.0 | sed 's/[\t ][\t ]*/\n/g' | sed -n '1p'`
+        if [ "$l" -gt "4096" ] ;then
+            rm -fr $LOGDIR/logcat/trace.5.tar.gz
+            mv $LOGDIR/logcat/trace.4.gz $LOGDIR/logcat/trace.5.gz
+            mv $LOGDIR/logcat/trace.3.gz $LOGDIR/logcat/trace.4.gz
+            mv $LOGDIR/logcat/trace.2.gz $LOGDIR/logcat/trace.3.gz
+            mv $LOGDIR/logcat/trace.1.gz $LOGDIR/logcat/trace.2.gz
+            mv $LOGDIR/logcat/trace.0.gz $LOGDIR/logcat/trace.1.gz
+            cd $LOGDIR/logcat/
+            tar zcf $LOGDIR/logcat/trace.0.gz trace.0
+            echo "" > $LOGDIR/logcat/trace.0
+            sync
+            #rm -fr $LOGDIR/logcat/trace.0
+        fi
+        #date >> /sys/kernel/debug/tracing/trace_marker
+        #echo > /d/tracing/trace
+    fi
+}
+
+function procrank_collect()
+{
+    bak_if  $LOGDIR/logcat/memory.txt 4096
+    echo "------------------------------------------" >> $LOGDIR/logcat/memory.txt
+    date >> $LOGDIR/logcat/memory.txt
+    cat /proc/meminfo >> $LOGDIR/logcat/memory.txt
+    cat /sys/class/kgsl/kgsl/page_alloc >> $LOGDIR/logcat/memory.txt
+    cat /sys/kernel/debug/ion/heaps/system | grep orphan >> $LOGDIR/logcat/memory.txt
+    df >>  $LOGDIR/logcat/memory.txt
+    if selinux_enforcing ; then
+        debug "selinux_enforcing"
+        return
+    fi
+    #procrank >> $LOGDIR/logcat/memory.txt &
+}
+
+function save_media_database()
+{
+    local threshold=262144
+    local size=`du -s /data/data/com.android.providers.media/databases | sed 's/[\t ][\t ]*/\n/g' | sed -n '1p'`
+    if [ "$size" -le "$threshold" ]; then
+        rm -rf $LOGDIR/media/*
+        date >> $LOGDIR/media/time.txt
+        tar zcf $LOGDIR/media/databases.tar.gz /data/data/com.android.providers.media/databases
+        chmod 644 $LOGDIR/media/*
+    elif [ "`ls $LOGDIR/media/`" != "" ]; then
+        rm -rf $LOGDIR/media/*
+    fi
+}
+
+function mainloop()
+{
+    debug "mainloop begin"
+    local interval=0
+    local e
+    local next
+
+    #process_info
+    #kmsg
+    #bakup_tombstones
+    for e in ${crontab[@]}
+    do
+        eval next=\${${e}[0]}
+        eval interval=\${${e}[1]}
+        debug "cur:$e $next $interval $sys_uptime"
+        if [ "$sys_uptime" -ge "$next" ] ;then
+            interval=`expr $interval + $sys_uptime`
+            eval ${e}[0]=\$interval
+            eval next=\${${e}[0]}
+            debug "next:$next $interval $sys_uptime"
+            eval local len=\${#${e}[@]}
+            local funi=2
+            while [ $funi -lt $len ]
+            do
+                eval \${${e}[$funi]}
+                eval debug \${${e}[$funi]}
+                funi=`expr $funi + 1`
+            done
+        fi
+    done
+    #chmod logcat from 755 to 777 for RIL exception log ZTE_yangxiangling_2017212
+    chmod 777 $LOGDIR/logcat
+    chmod -R 755  $LOGDIR/logcat/*
+    chmod -R 755  $LOGDIR/kernel/*
+    chmod -R 755  $LOGDIR/tz/*
+    chmod -R 755  $LOGDIR/data_kernel/*
+
+    debug "mainloop end"
+}
+
+function need_log
+{
+    local available=`df  | grep "$DATADIR" | sed 's/[\t ][\t ]*/\n/g' | sed -n '4p'`
+    local total=`du -s $LOGDIR | sed 's/[\t ][\t ]*/\n/g' | sed -n '1p'`
+    if [ "$available"x == ""x ];then
+        available=102400
+    fi
+    #debug "need_log $available $total"
+    if [[ $baseband == "" ]]
+    then
+        baseband=`getprop gsm.version.baseband`
+    fi
+    if [[ $baseband == *$SM8150_PLATFORM* ]]
+    then
+        if [ "$available" -gt "51200" -a "$total" -lt "204800" ] ;then
+            return 0
+        fi
+    else
+        if [ "$available" -gt "51200" -a "$total" -lt "163840" ] ;then
+            return 0
+        fi
+    fi
+    return 1
+}
+
+function delete_logs
+{
+    rm -rf $LOGDIR/bugreports
+    rm -rf $LOGDIR/Pictures
+    rm $LOGDIR/loglast[1-9]*.gz
+    rm $LOGDIR/*.hprof
+}
+
+function delete_logs_low
+{
+    available=`df | grep "$DATADIR" | sed 's/[\t ][\t ]*/\n/g' | sed -n '4p'`
+
+    if [ "$available" -lt "1048576" ]; then
+        debug "$SYSDIR to low: $available, delete some log"
+        delete_logs
+    fi
+
+    if [ "$available" -lt "524288" ]; then
+        debug "$LOGDIR to low: $available, delete *hprof *.gz"
+        rm $LOGDIR/*.hprof
+        rm $LOGDIR/*.gz
+    fi
+}
+
+function onboot()
+{
+    debug "onboot"
+    if [ "$isbootcomplete" -eq "1" ] ;then
+        return
+    fi
+    local bootanim_service=`getprop init.svc.bootanim`
+    if [ "$bootanim_service" != "stopped" ] ;then
+        debug "bootanim service $bootanim_service"
+        return
+    fi
+    isbootcomplete=1
+    for func in ${onbootcomplete[@]}
+    do
+        debug "call $func when bootcomplete"
+        $func
+    done
+}
+
+function save_bootlog()
+{
+    debug "save bootlog"
+    tar czf $LOGDIR/logcat/logsboot0.tar.gz $LOGDIR/kernel $LOGDIR/logcat/logcat_*
+}
+
+function call_at()
+{
+    local which
+    local when
+    local fun
+    for which in ${crontab_at[*]}
+    do
+        eval when=\${${which}[0]}
+        eval fun=\${${which}[1]}
+        if [ "$when" -ne "0" ] ; then
+            debug "$fun will call at $when"
+        fi
+
+        if [ "$when" -ne "0" -a "$sys_uptime" -ge "$when" ] ; then
+            $fun
+            eval ${which}[0]=0
+        fi
+    done
+}
+
+function save_display_log()
+{
+    mv $LOGDIR/gpu/kgsl_mem4.tar.gz $LOGDIR/gpu/kgsl_mem5.tar.gz
+    mv $LOGDIR/gpu/kgsl_mem3.tar.gz $LOGDIR/gpu/kgsl_mem4.tar.gz
+    mv $LOGDIR/gpu/kgsl_mem2.tar.gz $LOGDIR/gpu/kgsl_mem3.tar.gz
+    mv $LOGDIR/gpu/kgsl_mem1.tar.gz $LOGDIR/gpu/kgsl_mem2.tar.gz
+    tar czf $LOGDIR/gpu/kgsl_mem1.tar.gz -C $LOGDIR/gpu mem
+    chmod 644 $LOGDIR/gpu/kgsl_mem1.tar.gz
+    rm -r $LOGDIR/gpu/mem
+    mkdir $LOGDIR/gpu/mem
+
+    cp -rf /d/kgsl/proc/* $LOGDIR/gpu/mem
+}
+
+version=`getprop ro.build.version.release`
+version=${version%%.*}
+if [ "$version" -gt "6" ] ; then
+  every30s=(0 29 kmsg save_display_log)
+else
+  every30s=(0 29 kmsg)
+fi
+
+every60s=(0 59 process_info bakup_tombstones get_pm_log check_lowmem )
+every600s=(0 599 procrank_collect)
+#every30m=(0 1799 save_media_database)
+every7200s=(0 7199 get_robot_log)
+crontab=(every30s every60s every600s every7200s)
+onbootcomplete=(savemodemcrash save_recovery_log baseinfo ps_info autorun config_info jank_detect)
+bootlog=(180 save_bootlog)
+crontab_at=(bootlog)
+isbootcomplete=0
+isresetlogsavedone=0
+
+
+mkdir $LOGDIR
+mkdir $LOGDIR/kernel
+mkdir $LOGDIR/logcat
+mkdir $LOGDIR/smem
+mkdir $LOGDIR/resetlog
+mkdir $LOGDIR/tz
+mkdir $LOGDIR/data_kernel
+mkdir $LOGDIR/gpu
+mkdir $LOGDIR/modem
+mkdir $PSTORE_PATH
+mkdir $LOGDIR/media
+
+chmod 644 $LOGDIR/modem
+chmod 755 $PSTORE_PATH
+
+#if [ ! -L "/data/local/logs" ] ; then
+#    ln -s $LOGDIR /data/local/logs
+#fi
+
+cd $SYSDIR
+mv $LOGDIR/loglast4.tar.gz $LOGDIR/loglast5.tar.gz
+mv $LOGDIR/loglast3.tar.gz $LOGDIR/loglast4.tar.gz
+mv $LOGDIR/loglast2.tar.gz $LOGDIR/loglast3.tar.gz
+mv $LOGDIR/loglast1.tar.gz $LOGDIR/loglast2.tar.gz
+date > $LOGDIR/kernel/ram_console.txt
+cat $LAST_KMSG_FILE >> $LOGDIR/kernel/ram_console.txt
+cat $PSTORE_CONSOLE_FILE >> $LOGDIR/kernel/ram_console.txt
+tar czf $LOGDIR/loglast1.tar.gz vendor_logs/kernel vendor_logs/logcat vendor_logs/smem vendor_logs/resetlog vendor_logs/tz vendor_logs/data_kernel vendor_logs/smem*.gz vendor_logs/modem  vendor_logs/gpu
+
+rm -r vendor_logs/resetlog/*
+rm -rf $LOGDIR/resetlog/summary/powerlog
+cp -fr $LOGDIR/logcat/summary $LOGDIR/resetlog/summary/
+mkdir $LOGDIR/resetlog/summary/powerlog
+mkdir $LOGDIR/resetlog/summary/powerlog/logcat_event
+cp -fr $LOGDIR/logcat/pmlog $LOGDIR/resetlog/summary/powerlog/pmlog
+cp -fr $LOGDIR/logcat/logcat_events* $LOGDIR/resetlog/summary/powerlog/logcat_event
+
+rm -r vendor_logs/kernel/*
+rm -r vendor_logs/tz/*
+rm -r vendor_logs/data_kernel/*
+rm -r vendor_logs/logcat/*
+rm -r vendor_logs/smem/*
+rm -r vendor_logs/smem*.tar.gz
+rm -r vendor_logs/*.txt
+rm -r vendor_logs/*.log
+rm -f vendor_logs/modem/*
+rm -r vendor_logs/gpu/*
+rm -r logs/media/*
+
+mkdir $LOGDIR/logcat/summary/
+date >> $LOGDIR/logcat/summary/usage.txt
+
+mkdir $LOGDIR/logcat/pmlog
+find_emmc_battery_thermal_dir
+debug_oom
+
+chown system.root $LOGDIR/logcat/
+chmod -R 755 $LOGDIR/
+
+
+#mount -t debugfs none $DEBUGFS_PATH
+#mount -t pstore pstore $PSTORE_PATH
+
+chmod 755 /sys/kernel/debug
+
+logcat_to_file
+
+echo $$ > /dev/cpuctl/cpu_hungry_app/cgroup.procs
+echo $$ > /dev/cpuset/background/cgroup.procs
+
+save_tcpip_log &
+save_qsee_log &
+save_tz_log &
+rm /data/local/tmp/stopmonkey
+
+baseinfo
+chmod -R 755 $LOGDIR/
+
+create_hook_file_for_snapshot
+
+sys_uptime=$INTERVAL_MAIN
+
+#console-ramoops-0 need indeterminate time seconds, so delay to check in loop
+#set resetlog of console-ramoops-0 saving during while loop
+save_reset_log_preloop
+
+start getsysteminfo
+
+function start_atrace2()
+{
+    sleep 8
+    start atrace2
+}
+
+start_atrace2 &
+
+
+
+while true
+do
+    uptime0=`cat /proc/uptime | sed 's/[\t ][\t ]*/\n/g' | sed -n '1p'`
+    uptime0=${uptime0/\.*/}
+
+    debug "time: $sys_uptime"
+
+    save_reset_log_inloop
+    onboot
+    call_at
+
+    if need_log ; then
+        mainloop
+    else
+        debug "donot log"
+        delete_logs
+    fi
+    delete_logs_low
+    uptime1=`cat /proc/uptime | sed 's/[\t ][\t ]*/\n/g' | sed -n '1p'`
+    uptime1=${uptime1/\.*/}
+    sec=`expr $uptime0 + $INTERVAL_MAIN - $uptime1`
+
+    if [ -z "$sec" ]; then
+        sec=$INTERVAL_MAIN
+    fi
+
+    if [ "$sec" -gt "30" -o  "$sec" -le "0" ]; then
+        debug "sec error $sec, reset it"
+        sec=$INTERVAL_MAIN
+    fi
+
+    debug "need to sleep $sec"
+    sleep $sec
+    sys_uptime=`expr $sys_uptime + $INTERVAL_MAIN`
+done

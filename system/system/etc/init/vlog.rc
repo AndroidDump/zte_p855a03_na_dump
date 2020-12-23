@@ -1,0 +1,11 @@
+service vlog /system/bin/vlog
+    user root
+    disabled
+    oneshot
+
+on property:persist.odm.vlog.enable=0
+    stop vlog
+
+on property:persist.odm.vlog.enable=1
+    start vlog
+

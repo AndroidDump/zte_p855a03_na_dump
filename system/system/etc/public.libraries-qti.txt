@@ -1,0 +1,2 @@
+libqvrservice_client.qti.so
+libqvrcamera_client.qti.so

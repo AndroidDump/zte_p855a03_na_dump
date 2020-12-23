@@ -1,0 +1,24 @@
+#
+# zte early log
+#
+on boot && property:ro.boot.partimount=true
+    start getearlylog
+
+on charger && property:ro.boot.partimount=true
+    wait /dev/block/platform/soc/${ro.boot.bootdevice}
+    symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
+
+    wait /dev/block/bootdevice/by-name/logdump
+    mount ext4 /dev/block/bootdevice/by-name/logdump /logdump noatime nosuid nodev barrier=1
+
+    start getearlylog
+
+service getearlylog /system/bin/getearlylogtofile
+    class core
+    user root
+    group root log system
+    disabled
+    oneshot
+
+on fs
+    restorecon_recursive --force /logdump

@@ -1,0 +1,179 @@
+#
+# zte log
+#
+on property:persist.sys.ztelog.enable=0
+    stop getlog
+    stop iotop
+
+on property:persist.sys.ztelog.enable=1
+    mount debugfs none /sys/kernel/debug
+    chmod 0755 /sys/kernel/debug
+    start iotop
+    start getlog
+
+    setprop dalvik.vm.lockprof.threshold 100
+    setprop persist.backtrace.threshold 100
+
+    #enable to record when app enter suspend or resume
+    write /sys/module/msm_pm/parameters/zte_enableRecord 1
+    write /sys/module/pm_debug/parameters/zte_enableRecord 1
+    #start start_tracer
+
+    #sched trace event
+    write /sys/kernel/debug/tracing/events/sched/sched_switch/enable 1
+    write /sys/kernel/debug/tracing/events/sched/sched_wakeup/enable 1
+    write /sys/kernel/debug/tracing/events/sched/sched_waking/enable 1
+    write /sys/kernel/debug/tracing/events/sched/sched_blocked_reason/enable 1
+    write /sys/kernel/debug/tracing/events/sched/sched_cpu_hotplug/enable 1
+    write /sys/kernel/debug/tracing/events/sched/sched_pi_setprio/enable 1
+    write /sys/kernel/debug/tracing/events/sched/sched_process_exit/enable 1
+    write /sys/kernel/debug/tracing/events/cgroup/enable 1
+    write /sys/kernel/debug/tracing/events/oom/oom_score_adj_update/enable 1
+    write /sys/kernel/debug/tracing/events/task/task_rename/enable 1
+    write /sys/kernel/debug/tracing/events/task/task_newtask/enable 1
+    #freq trace event
+    write /sys/kernel/debug/tracing/events/power/cpu_frequency/enable 1
+    write /sys/kernel/debug/tracing/events/power/clock_set_rate/enable 1
+    write /sys/kernel/debug/tracing/events/power/clock_disable/enable 1
+    write /sys/kernel/debug/tracing/events/power/clock_enable/enable 1
+    write /sys/kernel/debug/tracing/events/clk/clk_set_rate/enable 1
+    write /sys/kernel/debug/tracing/events/clk/clk_disable/enable 1
+    write /sys/kernel/debug/tracing/events/clk/clk_enable/enable 1
+    write /sys/kernel/debug/tracing/events/power/cpu_frequency_limits/enable 1
+    #memreclaim trace event
+    write /sys/kernel/debug/tracing/events/vmscan/mm_vmscan_direct_reclaim_begin/enable 1
+    write /sys/kernel/debug/tracing/events/vmscan/mm_vmscan_direct_reclaim_end/enable 1
+    write /sys/kernel/debug/tracing/events/vmscan/mm_vmscan_kswapd_wake/enable 1
+    write /sys/kernel/debug/tracing/events/vmscan/mm_vmscan_kswapd_sleep/enable 1
+    write /sys/kernel/debug/tracing/events/lowmemorykiller/enable 1
+    #workq trace event
+    write /sys/kernel/debug/tracing/events/workqueue/enable 1
+    # irq trace event
+    write /sys/kernel/debug/tracing/events/irq/enable 1
+    write /sys/kernel/debug/tracing/events/ipi/enable 1
+    #mmc trace event
+    write /sys/kernel/debug/tracing/events/mmc/enable 1
+    #disk trace event
+    write /sys/kernel/debug/tracing/events/f2fs/f2fs_sync_file_enter/enable 1
+    write /sys/kernel/debug/tracing/events/f2fs/f2fs_sync_file_exit/enable 1
+    write /sys/kernel/debug/tracing/events/f2fs/f2fs_write_begin/enable 1
+    write /sys/kernel/debug/tracing/events/f2fs/f2fs_write_end/enable 1
+    write /sys/kernel/debug/tracing/events/ext4/ext4_da_write_begin/enable 1
+    write /sys/kernel/debug/tracing/events/ext4/ext4_da_write_end/enable 1
+    write /sys/kernel/debug/tracing/events/ext4/ext4_sync_file_enter/enable 1
+    write /sys/kernel/debug/tracing/events/ext4/ext4_sync_file_exit/enable 1
+    write /sys/kernel/debug/tracing/events/block/block_rq_issue/enable 1
+    write /sys/kernel/debug/tracing/events/block/block_rq_complete/enable 1
+    #setprop debug.atrace.tags.enableflags 0x607e
+    write /sys/kernel/debug/tracing/options/overwrite 1
+    write /sys/kernel/debug/tracing/saved_cmdlines_size 4096
+    write /sys/kernel/debug/tracing/buffer_size_kb 4096
+    write /sys/kernel/debug/tracing/tracing_on 1
+
+
+
+#
+# dcm log
+#
+on property:persist.sys.dcmlog.enable=0
+    stop iotop
+    stop getlog
+
+on property:persist.sys.dcmlog.enable=1
+    mount debugfs none /sys/kernel/debug
+    chmod 0755 /sys/kernel/debug
+    start getlog
+    #enable to record when app enter suspend or resume
+    write /sys/module/msm_pm/parameters/zte_enableRecord 1
+    write /sys/module/pm_debug/parameters/zte_enableRecord 1
+    start start_tracer
+
+#on property:persist.sys.k=*
+#    start start_tracer
+
+service iotop /system/bin/startiotop.sh
+    class core
+    user root
+    disabled
+    oneshot
+    seclabel u:r:dumpstate:s0
+
+service getlog /system/bin/getlogtofile
+    class core
+    user root
+    group root log cache system
+    disabled
+    oneshot
+
+service getsysteminfo /system/bin/getsysteminfo
+    class core
+    user system
+    group root cache system
+    disabled
+    oneshot
+
+
+service jankdumpsystrace /system/bin/dumptrace.sh
+    class main
+    user root
+    disabled
+    oneshot
+    seclabel u:r:dumpstate:s0
+
+service dumpsystrace /system/bin/dumptrace.sh
+    class main
+    user root
+    disabled
+    oneshot
+    seclabel u:r:dumpstate:s0
+
+service getsystrace /system/bin/dumptrace.sh
+    user root
+    disabled
+    oneshot
+    keycodes 114 116
+    seclabel u:r:dumpstate:s0
+
+# service start_tracer /system/bin/start_tracer.sh
+#     user root
+#     disabled
+#     oneshot
+#     seclabel u:r:dumpstate:s0
+
+service stop_tracer /system/bin/stop_tracer.sh
+    user root
+    disabled
+    oneshot
+
+#
+# zte tcpdump wetest log
+#
+on property:persist.sys.tcpdump.enable=0
+    stop tcpdump_wetest
+    stop cnss_diag
+
+on property:persist.sys.tcpdump.enable=1
+    start tcpdump_wetest
+    start cnss_diag
+
+service tcpdump_wetest /system/bin/tcpdump -iany -p -vv -s 0 -C 40 -W 3 -w /data/tcplog/tcpdump.pcap
+    class late_start
+    user root
+    disabled
+    oneshot
+
+# service collectusage /system/bin/collectusage.sh
+#     disabled
+#     oneshot
+#     seclabel u:r:dumpstate:s0
+
+# on property:sys.shutdown.requested=*
+#     setprop persist.sys.normal_shutdown 1
+#     start collectusage
+
+service atrace2 /system/bin/atrace2 --async_start -c -b 4096 -t 3600000 gfx wm view webview am res sched freq dalvik input
+    class late_start
+    user root
+    disabled
+    oneshot
+    seclabel u:r:dumpstate:s0

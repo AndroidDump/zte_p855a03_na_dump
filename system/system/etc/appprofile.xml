@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<packages-list>
+    <pkg>
+        <name>ztenosmartcpu</name>
+        <cpufreq>2803200</cpufreq>
+        <gpufreq>710000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>ztedefault</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>710000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.autonavi.xmgd.navigator</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.autonavi.minimap</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.baidu.navi</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>596000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.moji.zteweather</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>596000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.baidu.BaiduMap</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>596000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.funcity.taxi.passenger</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>596000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.sdu.didi.psnger</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>596000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.youku.phone</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.taobao.taobao</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.UCMobile</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.tencent.mtt</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.tencent.mobileqq</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.tencent.mm</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.android.browser</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.sina.news</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.sina.weibo</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.tencent.news</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.sohu.newsclient</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.baidu.news</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.ss.android.article.news</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.ifeng.news2</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.netease.newsreader.activity</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.tencent.pao</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.zte.camera</name>
+        <cpufreq>2323200</cpufreq>
+        <gpufreq>710000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+    </pkg>
+
+    <pkg>
+      <name>com.antutu.ABenchMark</name>
+      <cpufreq>2803200</cpufreq>
+      <gpufreq>710000000</gpufreq>
+      <corecount>8</corecount>
+      <thermal>1</thermal>
+      <perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+      0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+      0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+      0x4281C000, 2000</perfParams>
+    </pkg>
+    <pkg>
+      <name>com.antutu.benchmark.bench64</name>
+      <cpufreq>2803200</cpufreq>
+      <gpufreq>710000000</gpufreq>
+      <corecount>8</corecount>
+      <thermal>1</thermal>
+      <perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+      0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+      0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+      0x4281C000, 2000</perfParams>
+      <thermal>1</thermal>
+    </pkg>
+    <pkg>
+      <name>com.antutu.ABenchMark.plugin3d-1</name>
+      <cpufreq>2803200</cpufreq>
+      <gpufreq>710000000</gpufreq>
+      <corecount>8</corecount>
+      <thermal>1</thermal>
+      <perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+      0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+      0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+      0x4281C000, 2000</perfParams>
+    </pkg>
+
+    <pkg>
+      <name>com.antutu.benchmark.full</name>
+      <cpufreq>2803200</cpufreq>
+      <gpufreq>710000000</gpufreq>
+      <corecount>8</corecount>
+      <thermal>1</thermal>
+      <perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+      0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+      0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+      0x4281C000, 2000</perfParams>
+    </pkg>
+
+    <pkg>
+        <name>com.ludashi.benchmark</name>
+	<cpufreq>2803200</cpufreq>
+	<gpufreq>710000000</gpufreq>
+	<corecount>8</corecount>
+	<thermal>1</thermal>
+	<perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+	0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+	0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+	0x4281C000, 2000</perfParams>
+    </pkg>
+
+    <pkg>
+        <name>com.ludashi.benchmark2</name>
+	<cpufreq>2803200</cpufreq>
+	<gpufreq>710000000</gpufreq>
+	<corecount>8</corecount>
+	<thermal>1</thermal>
+	<perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+	0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+	0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+	0x4281C000, 2000</perfParams>
+    </pkg>
+
+
+    <pkg>
+        <name>com.andromeda.androbench2</name>
+	<cpufreq>2803200</cpufreq>
+	<gpufreq>710000000</gpufreq>
+	<corecount>8</corecount>
+	<thermal>1</thermal>
+	<perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+	0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+	0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+	0x4281C000, 2000</perfParams>
+    </pkg>
+
+
+    <pkg>
+        <name>com.greenecomputing.linpack</name>
+	<cpufreq>2803200</cpufreq>
+	<gpufreq>710000000</gpufreq>
+	<corecount>8</corecount>
+	<thermal>1</thermal>
+	<perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+	0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+	0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+	0x4281C000, 2000</perfParams>
+    </pkg>
+
+    <pkg>
+        <name>com.quicinc.vellamo</name>
+	<cpufreq>2803200</cpufreq>
+	<gpufreq>710000000</gpufreq>
+	<corecount>8</corecount>
+	<thermal>1</thermal>
+	<perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+	0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+	0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+	0x4281C000, 2000</perfParams>
+    </pkg>
+
+    <pkg>
+        <name>com.andromeda.androbench2</name>
+	<cpufreq>2803200</cpufreq>
+	<gpufreq>710000000</gpufreq>
+	<corecount>8</corecount>
+	<thermal>1</thermal>
+	<perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+	0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+	0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+	0x4281C000, 2000</perfParams>
+    </pkg>
+
+    <pkg>
+        <name>com.passmark.pt_mobile</name>
+	<cpufreq>2803200</cpufreq>
+	<gpufreq>710000000</gpufreq>
+	<corecount>8</corecount>
+	<thermal>1</thermal>
+	<perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+	0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+	0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+	0x4281C000, 2000</perfParams>
+    </pkg>
+
+    <pkg>
+        <name>se.nena.nenamark2</name>
+	<cpufreq>2803200</cpufreq>
+	<gpufreq>710000000</gpufreq>
+	<corecount>8</corecount>
+	<thermal>1</thermal>
+	<perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+	0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+	0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+	0x4281C000, 2000</perfParams>
+    </pkg>
+
+    <pkg>
+        <name>sdet.tool.webview</name>
+	<cpufreq>2803200</cpufreq>
+	<gpufreq>710000000</gpufreq>
+	<corecount>8</corecount>
+	<thermal>1</thermal>
+	<perfParams>0x40C00000, 0x1, 0x40804000, 0xFFF, 0x40804100, 0xFFF, 0x40804200, 0xFFF,
+	0x40800000, 0xFFF, 0x40800100, 0xFFF, 0x40800200, 0xFFF, 0x41800000, 0xFF,
+	0x40400000, 0x1, 0x42C10000, 0x1, 0x43000000, 0xFF, 0x43400000, 0xFFFF,
+	0x4281C000, 2000</perfParams>
+    </pkg>
+
+    <pkg>
+        <name>zte.com.cn.driverMode</name>
+        <cpufreq>2323200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.autonavi.minimap</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.baidu.BaiduMap</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.tencent.map</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.google.android.apps.maps</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.szzc.ucar.pilot</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.ygkj.chelaile.standard</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.autonavi.xmgd.navigator</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>cn.buding.martin</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.coomix.app.bus</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.cn.bushelper</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.baidu.navi</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.shjt.map</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>org.microemu.android.se.appello.lp.Lightpilot</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.mapquest.android.ace</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.codesector.maverick.lite</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.discipleskies.android.polarisnavigation</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.sygic.aura</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.google.android.apps.maps</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.crittermap.backcountrynavigator</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.waze</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>com.mapfactor.navigator</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+    <pkg>
+        <name>net.osmand</name>
+        <cpufreq>1843200</cpufreq>
+        <gpufreq>675000000</gpufreq>
+        <corecount>8</corecount>
+        <thermal>0</thermal>
+        <framerate>0</framerate>
+    </pkg>
+</packages-list>

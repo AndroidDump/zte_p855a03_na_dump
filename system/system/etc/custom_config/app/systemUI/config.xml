@@ -1,0 +1,9 @@
+<resources>
+    <integer name="STYLE">5</integer>
+    <boolean name="WATER_NOTCH">true</boolean>
+    <boolean name="FINGERPRINT_UNDER_LCD">true</boolean>
+    <boolean name="NEW_KEYGUARD_UI">false</boolean>
+    <boolean name="PC_MODE">false</boolean>
+    <boolean name="DOZE_MFV">true</boolean>
+    <boolean name="DISABLE_SAMPLE_SOUND_WHEN_MUTE">true</boolean>
+</resources>

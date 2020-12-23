@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2009 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<packagename xmlns:launcher="http://schemas.android.com/apk/res/android">		
+    <disableapp launcher:packageNameDisableAPP="com.android.providers.contacts"/>
+    <disableapp launcher:packageNameDisableAPP="com.yulore.framework"/>
+    <disableapp launcher:packageNameDisableAPP="com.android.contacts"/>
+    <disableapp launcher:packageNameDisableAPP="com.android.providers.blockednumber"/>
+    <disableapp launcher:packageNameDisableAPP="com.android.mms"/>
+    <disableapp launcher:packageNameDisableAPP="com.android.messaging"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.mifavor.miboard"/>
+    <disableapp launcher:packageNameDisableAPP="com.android.calendar"/>
+    <disableapp launcher:packageNameDisableAPP="zte.com.cn.filer"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.heartyservice"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.zdm"/>
+    <disableapp launcher:packageNameDisableAPP="com.android.providers.downloads.ui"/>
+    <disableapp launcher:packageNameDisableAPP="com.android.providers.downloads"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.burntest.camera"/>
+    <disableapp launcher:packageNameDisableAPP="zte.com.market"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.mfvkeyguard"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.ztelockscreen"/>
+    <disableapp launcher:packageNameDisableAPP="org.zx.AuthComp"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.beautify"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.theme"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.mifavor.theme.resource"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.intellitext"/>
+    <disableapp launcher:packageNameDisableAPP="com.te.browser"/>
+    <disableapp launcher:packageNameDisableAPP="com.android.providers.media"/>
+    <disableapp launcher:packageNameDisableAPP="com.ztepay.sdk.phonepay"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.retrieve"/>
+    <disableapp launcher:packageNameDisableAPP="com.android.settings.intelligence"/>
+    <disableapp launcher:packageNameDisableAPP="com.android.htmlviewer"/>
+    <disableapp launcher:packageNameDisableAPP="com.zte.aliveupdate"/>
+    <disableapp launcher:packageNameDisableAPP="com.sohu.inputmethod.sogou.zte"/>
+</packagename>

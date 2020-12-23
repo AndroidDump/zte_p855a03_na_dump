@@ -1,0 +1,13 @@
+# msmnile-user 10 QKQ1.191117.002 20200107.152718 release-keys
+- manufacturer: 
+- platform: msmnilemsmnile
+- codename: P855A03_NA
+- flavor: msmnile-user
+- release: 10
+- id: QKQ1.191117.002
+- incremental: 20200107.152718
+- tags: release-keys
+- fingerprint: ZTE/P855A03_NA/P855A03_NA:10/QKQ1.191117.002/20200107.152718:user/release-keys
+- brand: ZTE
+- branch: msmnile-user-10-QKQ1.191117.002-20200107.152718-release-keys
+- repo: zte_p855a03_na_dump

@@ -1,0 +1,11 @@
+#!/system/bin/sh
+
+for i in `ps | busybox awk '{if(NR>1 && $7!="00000000")print $2}'`
+do
+if busybox [ -d /proc/$i ]; then
+    cat /proc/$i/oom_adj | busybox tr '\n' ':'
+    cat /proc/$i/status | busybox grep Name | busybox awk 'BEGIN{ORS=""}{print " " $2 " "}'
+    echo -n "$i "
+    ps $i | busybox awk '{if(NR>1) print $9}'
+fi
+done

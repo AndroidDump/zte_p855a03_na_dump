@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<config>
+    <allow-in-power-save-except-idle package="com.zte.zdm"/>
+    <allow-in-power-save-except-idle package="com.zte.aliveupdate" />
+
+    <allow-in-power-save-except-idle package="com.zte.mfvkeyguard" />
+</config>

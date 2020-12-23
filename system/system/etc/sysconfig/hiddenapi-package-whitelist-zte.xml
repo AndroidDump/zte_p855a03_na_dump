@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<config>
+  <zte-hidden-api-whitelisted-app package="zte.com.cn.driverMode" />
+  <hidden-api-whitelisted-app package="com.zte.zdm" />
+  <zte-hidden-api-whitelisted-app package="com.yo.voicetranslate" />
+  <zte-hidden-api-whitelisted-app package="com.ume.browser.cust" />
+</config>

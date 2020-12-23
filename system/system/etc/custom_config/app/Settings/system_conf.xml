@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings version="6">
+    <system key = "navigation_key_switch"
+        value = "1"
+    />
+
+    <system key = "gesture_visual_feedback"
+        value = "0"
+    />
+
+    <system key = "gesture_trigger_voice_assistant"
+        value = "0"
+    />
+
+    <system key = "second_slide_touch"
+        value = "1"
+    />
+
+    <system key = "accelerometer_rotation"
+        value = "0"
+    />
+
+    <system key = "screen_brightness_mode"
+        value = "1"
+    />
+
+    <system key = "mfv_lock_enabled"
+        value = "1"
+    />
+
+    <system key = "vibrate_when_ringing"
+        value = "0"
+    />
+
+    <system key = "dtmf_tone"
+        value = "1"
+    />
+
+    <system key = "lockscreen_sounds_enabled"
+        value = "1"
+    />
+
+    <system key = "sound_effects_enabled"
+        value = "1"
+    />
+
+    <system key = "haptic_feedback_enabled"
+        value = "1"
+    />
+
+    <system key = "ring_increasing_enabled"
+        value = "1"
+    />
+
+    <system key = "one_handed_mode"
+        value = "1"
+    />
+
+    <system key = "navigationbar_config"
+        value = "16"
+    />
+
+    <system key = "notification_light_pulse"
+        value = "1"
+    />
+
+    <system key = "charging_indicator"
+        value = "1"
+    />
+
+    <system key = "low_battery_indicator"
+        value = "1"
+    />
+
+    <system key = "new_event_indicator"
+        value = "1"
+    />
+
+    <system key = "notification_indicator"
+        value = "1"
+    />
+
+    <system key = "no_charge_indication_at_night"
+        value = "0"
+    />
+
+    <system key = "volume_music"
+        value = "9"
+    />
+
+    <system key = "volume_alarm"
+        value = "6"
+    />
+
+    <system key = "volume_ring"
+        value = "5"
+    />
+
+    <system key = "volume_notification"
+        value = "5"
+    />
+
+    <system key = "volume_voice"
+        value = "4"
+    />
+</settings>

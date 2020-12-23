@@ -1,0 +1,30 @@
+<resources>
+    <integer name="WORKSPACE_X">4</integer>
+    <integer name="WORKSPACE_Y">6</integer>
+    <integer name="MIN_SCREEN_COUNT">1</integer>
+    <integer name="DEFAULT_SCREEN">0</integer>
+    <integer name="STANDARD_DENSITY">480</integer>
+    <integer name="ALL_APP_CELL_HEIGHT">100</integer>
+    <boolean name="NO_MINUS_ONE">false</boolean>
+    <boolean name="MINUS_ONE_ENABLE_DEFAULT">true</boolean>
+    <integer name="ICON_SIZE">54</integer>
+    <boolean name="TEXT_ON_HOTSEAT_MODE">auto</boolean>
+    <integer name="FOLDER_ICON_TEXT_PADDING">0</integer>
+    <integer name="HOTSEAT_HEIGHT">192</integer>
+    <boolean name="ALLOW_ROWS_COLUMNS_6_4">true</boolean>
+    <boolean name="ALLOW_ROWS_COLUMNS_6_5">true</boolean>
+    <float name="OVERVIEW_WORKSPACE_SHRINK_FACTOR">0.77</float>
+    <boolean name="ALLOW_ROTATE">true</boolean>
+    <integer name="WORKSPACE_ICON_TEXT_PADDING">0</integer>
+	<boolean name="FULLSCREEN_GESTURE">true</boolean>
+    <integer name="APPS_TEXT_SIZE">13</integer>
+    <string name="MY_PHOTOS_PACKAGE">com.google.android.apps.photos</string>
+    <boolean name="NO_ANDROID_THEME_CHANGE">true</boolean>
+    <boolean name="SET_BOTH_WALLPAPER_ONE_BY_ONE">true</boolean>
+    <boolean name="RESTRICT_MONKEY_DRAG_ICON">true</boolean>
+    <integer name="WORKSPACE_CELL_PADDING_X">15</integer>
+    <boolean name="ALL_APP_SEARCH_TRANSPARENT">true</boolean>
+    <boolean name="MIFAVOR_STOCK_MIX">true</boolean>
+    <integer name="ICON_SIZE_LANDSCAPE">35</integer>
+    <integer name="HOTSEAT_X">5</integer>
+</resources>
